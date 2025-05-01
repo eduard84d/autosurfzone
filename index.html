@@ -1,139 +1,101 @@
-<!-- AutoSurfZone MVP with Withdraw, Daily Limit & Active Tab Check -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AutoSurfZone</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f2f2f2; }
-    h1 { color: #333; }
-    iframe { width: 100%; height: 400px; border: none; margin-top: 20px; }
-    #balance { font-size: 24px; margin: 10px 0; }
-    #withdrawBtn:disabled { background: #ccc; cursor: not-allowed; }
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    iframe { width: 90%; height: 400px; border: none; margin-top: 20px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
   </style>
 </head>
 <body>
   <h1>AutoSurfZone</h1>
-  <p>Your balance: <span id="balance">0.00000000</span> LTC</p>
-  <iframe id="adFrame" src="" allowfullscreen></iframe>
-  <p>Views today: <span id="viewsCount">0</span> / <span id="maxViews">100</span></p>
-  <button id="withdrawBtn" disabled>Withdraw</button>
-  <p id="withdrawMsg"></p>
+  <p>Просматривайте рекламу и зарабатывайте LTC</p>
+  <div>
+    <p><strong>Ваш баланс:</strong> <span id="balance">0</span> LTC</p>
+    <p><strong>Просмотров сегодня:</strong> <span id="viewsCount">0</span></p>
+    <button id="withdrawBtn">Вывести средства</button>
+    <p id="withdrawMsg"></p>
+  </div>
+  <iframe id="adFrame" src=""></iframe>
 
   <script>
-    // Configuration
     const adLinks = [
-      "https://antautosurf.com/?ref=29085",
-      "https://faucetpay.io/?r=2738792",
-      "https://socpublic.com/?i=9480820&slide=1",
-      "https://bitsbon.com/?ref=5148",
-      "https://payeer.com/?session=12482302",
-      "https://rollercoin.com/?r=kndi047d",
-      "https://viefaucet.com?r=61e83d735cc8356fa4bded97",
-      "https://www.coinpayu.com/?r=eduard85",
-      "https://www.binance.com/referral/earn-together/refertoearn2000usdc/claim?hl=ru&ref=GRO_14352_KKBV3&utm_medium=web_share_copy&utm_source=referralmode"
+      'https://antautosurf.com/?ref=29085',
+      'https://faucetpay.io/?r=2738792',
+      'https://socpublic.com/?i=9480820&slide=1',
+      'https://bitsbon.com/?ref=5148',
+      'https://payeer.com/?session=12482302',
+      'https://rollercoin.com/?r=kndi047d',
+      'https://viefaucet.com?r=61e83d735cc8356fa4bded97',
+      'https://www.coinpayu.com/?r=eduard85',
+      'https://www.binance.com/referral/earn-together/refertoearn2000usdc/claim?hl=ru&ref=GRO_14352_KKBV3&utm_medium=web_share_copy&utm_source=referralmode',
+      'https://freebitco.in/?r=36730895'
     ];
-    const earnPerView = 0.00000001;
-    const maxViewsPerDay = 100;
-    const minWithdraw = 0.0002;
-    const botToken = '7628470113:AAHpwQ3I74r3r5-Saxzd5gzh9cJWifndEXc';
-    const chatId = '6967445539';
 
-    // State
-    let balance = parseFloat(localStorage.getItem('balance') || '0');
-    let viewsCount = 0;
+    let balance = parseFloat(localStorage.getItem('balance')) || 0;
+    let viewsCount = parseInt(localStorage.getItem('viewsCount')) || 0;
+    const earnPerView = 0.000001;
+    const maxViewsPerDay = 100;
+    const minWithdraw = 0.0001;
+
     const balanceEl = document.getElementById('balance');
     const viewsEl = document.getElementById('viewsCount');
     const withdrawBtn = document.getElementById('withdrawBtn');
     const withdrawMsg = document.getElementById('withdrawMsg');
 
-    // Daily limit reset
-    function initViews() {
-      const today = new Date().toDateString();
-      const storedDate = localStorage.getItem('viewsDate');
-      if (storedDate !== today) {
-        localStorage.setItem('viewsDate', today);
-        localStorage.setItem('viewsCount', '0');
-      }
-      viewsCount = parseInt(localStorage.getItem('viewsCount') || '0');
-      viewsEl.textContent = viewsCount;
-      document.getElementById('maxViews').textContent = maxViewsPerDay;
-    }
-
-    // Update balance display and withdraw button
     function updateUI() {
       balanceEl.textContent = balance.toFixed(8);
-      if (balance >= minWithdraw) {
-        withdrawBtn.disabled = false;
-      }
-    }
-
-    // Log earnings to Google Sheets
-    function logEarnings(wallet, earned) {
-      fetch('https://script.google.com/macros/s/AKfycby3lWT2s-B9wwQ6lEVIe5ZOavOGlk5NQkcanqY9eD7GwqXI6jXzYpnxANHDEC9S403AgA/exec', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet, earned })
-      });
-    }
-
-    // Send withdraw request to Telegram
-    function sendWithdraw(wallet, amount) {
-      const text = encodeURIComponent(`Withdraw request:\nWallet: ${wallet}\nAmount: ${amount.toFixed(8)} LTC`);
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}`);
+      viewsEl.textContent = viewsCount;
     }
 
     function updateBalance() {
       balance += earnPerView;
       localStorage.setItem('balance', balance.toString());
-      const wallet = localStorage.getItem('wallet') || 'anonymous';
-      logEarnings(wallet, earnPerView);
       updateUI();
     }
 
     function showNextAd() {
-      if (document.visibilityState !== 'visible') return; // Tab not active
-      if (viewsCount >= maxViewsPerDay) return; // Limit reached
+      if (document.visibilityState !== 'visible') return;
+      if (viewsCount >= maxViewsPerDay) return;
 
-      // Show ad
       const idx = Math.floor(Math.random() * adLinks.length);
       document.getElementById('adFrame').src = adLinks[idx];
 
-      // Increment counters
       viewsCount++;
       localStorage.setItem('viewsCount', viewsCount.toString());
-      viewsEl.textContent = viewsCount;
       updateBalance();
 
-      // Schedule next
       setTimeout(showNextAd, 20000);
     }
 
-    // Prompt wallet and start
-    function startSurfing() {
-      let wallet = localStorage.getItem('wallet');
-      if (!wallet) {
-        wallet = prompt('Enter your LTC wallet address:');
-        localStorage.setItem('wallet', wallet);
-      }
-      initViews();
-      updateUI();
-      showNextAd();
-    }
-
-    // Withdraw button handler
     withdrawBtn.addEventListener('click', () => {
-      const wallet = localStorage.getItem('wallet');
-      if (balance < minWithdraw) return;
-      sendWithdraw(wallet, balance);
-      withdrawMsg.textContent = 'Withdraw request sent!';
-      withdrawMsg.style.color = '#28a745';
+      const wallet = localStorage.getItem('wallet') || 'anonymous';
+      if (balance < minWithdraw) {
+        withdrawMsg.textContent = 'Минимальная сумма для вывода — 0.0001 LTC';
+        withdrawMsg.style.color = 'red';
+        return;
+      }
+      withdrawMsg.textContent = 'Запрос на вывод отправлен (симуляция).';
+      withdrawMsg.style.color = 'green';
       balance = 0;
       localStorage.setItem('balance', '0');
       updateUI();
     });
 
-    // Start on load
+    function startSurfing() {
+      let wallet = localStorage.getItem('wallet');
+      if (!wallet) {
+        wallet = prompt('Введите ваш LTC-кошелёк:');
+        localStorage.setItem('wallet', wallet);
+      }
+      updateUI();
+      showNextAd();
+    }
+
     window.addEventListener('load', startSurfing);
   </script>
 </body>
