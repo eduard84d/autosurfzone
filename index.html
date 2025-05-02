@@ -1,40 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AutoSurfZone</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f2f2f2; }
-    h1 { color: #333; }
-    iframe { width: 100%; height: 400px; border: none; margin-top: 20px; }
-    #balance { font-size: 24px; margin: 10px 0; }
-    #withdrawBtn:disabled { background: #ccc; cursor: not-allowed; }
-    .ads-banner { background: #f8f9fa; padding: 10px; margin-top: 20px; }
-    .ads-banner p { margin: 0; font-size: 18px; }
-    .ads-banner .price { font-weight: bold; color: #ff6347; }
-    .contact { margin-top: 20px; }
+    body { font-family: Arial, sans-serif; background: #121212; color: #f2f2f2; text-align: center; padding: 20px; }
+    header { font-size: 2rem; margin-bottom: 20px; color: #00ffe1; }
+    iframe { width: 100%; max-width: 1200px; height: 400px; border: 1px solid #444; border-radius: 8px; margin: 20px 0; }
+    button, .withdraw-btn { background: #28a745; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; }
+    button:disabled, .withdraw-btn:disabled { background: #555; cursor: not-allowed; }
+    .section { margin: 30px auto; padding: 20px; max-width: 800px; background: #1e1e1e; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.3); text-align: left; }
+    .section h3 { margin-bottom: 15px; color: #fff; font-size: 1.5em; }
+    .section p, .section li { margin: 8px 0; color: #ccc; font-size: 1.1em; }
+    .section li strong, .section p strong { color: #fff; }
+    .media-ad img { width: 100%; height: auto; border: 2px solid #444; border-radius: 4px; margin-bottom: 10px; }
+    .referral-box input { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 5px; cursor: pointer; }
+    footer { margin-top: 40px; padding: 20px; background: #222; border-radius: 8px; color: #aaa; font-size: .9em; }
+    footer a { color: #4dc3ff; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
   </style>
+  <!-- FingerprintJS для анти-мультиаккаунт -->
   <script src="https://openfpcdn.io/fingerprintjs/v3"></script>
 </head>
 <body>
-  <h1>AutoSurfZone</h1>
-  <p>Your balance: <span id="balance">0.00000000</span> LTC</p>
-  <iframe id="adFrame" src="" allowfullscreen></iframe>
-  <p>Views today: <span id="viewsCount">0</span> / <span id="maxViews">100</span></p>
-  <button id="withdrawBtn" disabled>Withdraw</button>
-  <p id="withdrawMsg"></p>
+  <header>AutoSurfZone — автосёрфинг для заработка</header>
 
-  <div class="ads-banner">
-    <p>Ваша реклама здесь: <span class="price">350 рублей за 1000 показов</span></p>
+  <!-- Системная фейковая статистика -->
+  <div class="section">
+    <h3>📊 Статистика проекта</h3>
+    <ul>
+      <li>Пользователей всего: <strong id="totalUsers">0</strong></li>
+      <li>Новых сегодня: <strong id="newToday">0</strong></li>
+      <li>Выплачено всего: <strong id="totalPaid">0.00000000</strong> LTC</li>
+      <li>Баланс системы: <strong id="systemBalance">0.00000000</strong> LTC</li>
+    </ul>
   </div>
 
-  <div class="contact">
-    <p>Контакты: <a href="mailto:autosurfzon@gmail.com">autosurfzon@gmail.com</a></p>
+  <!-- Ротация рекламных ссылок в iframe -->
+  <iframe id="adFrame" src=""></iframe>
+
+  <!-- Пользовательская статистика -->
+  <div class="section">
+    <h3>👤 Ваши данные</h3>
+    <p>Просмотров сегодня: <strong id="viewsCount">0</strong> / <strong id="maxViews">100</strong></p>
+    <p>Баланс: <strong id="balance">0.00000000</strong> LTC</p>
+    <button id="withdrawBtn" disabled>Вывести средства</button>
+    <p id="withdrawMsg"></p>
   </div>
+
+  <!-- Реферальная программа -->
+  <div class="section referral-box">
+    <h3>🔗 Приглашай друзей</h3>
+    <p>Получайте по <strong>10%</strong> от заработка приглашённых!</p>
+    <input type="text" readonly
+      value="https://autosurfzone.biz/?ref=твойID"
+      onclick="this.select(); document.execCommand('copy'); alert('Ссылка скопирована!');"
+    />
+  </div>
+
+  <!-- Медийная (баннерная) реклама -->
+  <div class="section media-ad">
+    <h3>📢 Ваша реклама здесь</h3>
+    <a href="https://твоя-рекламная-ссылка.ком" target="_blank">
+      <img src="https://via.placeholder.com/728x90.png?text=Ваш+баннер+здесь" alt="Реклама" />
+    </a>
+    <p>Цена: <strong>350 ₽ за 1000 показов</strong></p>
+  </div>
+
+  <!-- Контакты -->
+  <div class="section">
+    <h3>📬 Контакты</h3>
+    <ul>
+      <li>Email: <strong><a href="mailto:autosurfzon@gmail.com">autosurfzon@gmail.com</a></strong></li>
+    </ul>
+  </div>
+
+  <!-- Платёжная информация -->
+  <div class="section">
+    <h3>💳 Платёжные реквизиты</h3>
+    <ul>
+      <li>Payeer: <strong>P1022609501</strong></li>
+      <li>FaucetPay: <strong>eduardperschin@gmail.com</strong></li>
+      <li>Bitcoin: <strong>13pnTYdyXXTKW3Q8HMGNNKqZmzB9zz8ZT4</strong></li>
+    </ul>
+  </div>
+
+  <footer>
+    © 2025 AutoSurfZone. Все права защищены.
+  </footer>
 
   <script>
-    // Configuration
+    // Конфигурация рекламы
     const adLinks = [
       "https://antautosurf.com/?ref=29085",
       "https://faucetpay.io/?r=2738792",
@@ -44,132 +101,91 @@
       "https://rollercoin.com/?r=kndi047d",
       "https://viefaucet.com?r=61e83d735cc8356fa4bded97",
       "https://www.coinpayu.com/?r=eduard85",
-      "https://www.binance.com/referral/earn-together/refertoearn2000usdc/claim?hl=ru&ref=GRO_14352_KKBV3&utm_medium=web_share_copy&utm_source=referralmode"
+      "https://www.binance.com/referral/earn-together/refertoearn2000usdc/claim?hl=ru&ref=GRO_14352_KKBV3&utm_medium=web_share_copy&utm_source=referralmode",
+      "https://freebitco.in/?r=36730895"
     ];
     const earnPerView = 0.00000001;
-    const maxViewsPerDay = 100;
+    const maxViews = 100;
     const minWithdraw = 0.0002;
-    const botToken = '7628470113:AAE3ivkEmnQMojwFu2XHF_VQK7n3KSkEgQI';
-    const chatId = '6967445539';
 
-    // State
+    // Состояние пользователя
     let balance = parseFloat(localStorage.getItem('balance') || '0');
-    let viewsCount = 0;
+    let viewsCount = parseInt(localStorage.getItem('viewsCount') || '0');
+
     const balanceEl = document.getElementById('balance');
     const viewsEl = document.getElementById('viewsCount');
     const withdrawBtn = document.getElementById('withdrawBtn');
     const withdrawMsg = document.getElementById('withdrawMsg');
+    const totalUsersEl = document.getElementById('totalUsers');
+    const newTodayEl = document.getElementById('newToday');
+    const totalPaidEl = document.getElementById('totalPaid');
+    const systemBalanceEl = document.getElementById('systemBalance');
 
-    // FingerprintJS & Start
+    // Инициализация фейковой системной статистики
+    function initSystemStats() {
+      totalUsersEl.textContent = 500 + Math.floor(Math.random()*4500);
+      newTodayEl.textContent = 50 + Math.floor(Math.random()*150);
+      totalPaidEl.textContent = (10 + Math.random()*90).toFixed(8);
+      systemBalanceEl.textContent = (100 + Math.random()*400).toFixed(8);
+    }
+
+    // Обновление UI пользователя
+    function updateUI() {
+      balanceEl.textContent = balance.toFixed(8);
+      viewsEl.textContent = viewsCount;
+      withdrawBtn.disabled = balance < minWithdraw;
+    }
+
+    // Ротация рекламы
+    function rotateAd() {
+      const idx = viewsCount % adLinks.length;
+      document.getElementById('adFrame').src = adLinks[idx];
+    }
+
+    // Показ следующей рекламы
+    function showNextAd() {
+      if (document.visibilityState !== 'visible') return;
+      if (viewsCount >= maxViews) return;
+      rotateAd();
+      viewsCount++;
+      localStorage.setItem('viewsCount', viewsCount);
+      balance += earnPerView;
+      localStorage.setItem('balance', balance);
+      updateUI();
+      setTimeout(showNextAd, 30000);
+    }
+
+    // Запуск автосёрфа после проверки FingerprintJS
     FingerprintJS.load().then(fp => {
       fp.get().then(result => {
-        const visitorId = result.visitorId;
-        const blockedDevices = JSON.parse(localStorage.getItem('blockedDevices') || '[]');
+        const vid = result.visitorId;
+        const registered = localStorage.getItem('registeredDevice');
+        const blocked = JSON.parse(localStorage.getItem('blockedDevices')||'[]');
 
-        // Check if device is blocked
-        if (blockedDevices.includes(visitorId)) {
+        if (blocked.includes(vid) && registered!==vid) {
           document.body.innerHTML = "<h1 style='color:red;'>Доступ заблокирован</h1><p>Обнаружено несколько аккаунтов с этого устройства.</p>";
           return;
         }
-
-        // First time check
-        let registered = localStorage.getItem('registeredDevice');
-        if (!registered) {
-          localStorage.setItem('registeredDevice', visitorId);
-        } else if (registered !== visitorId) {
-          blockedDevices.push(visitorId);
-          localStorage.setItem('blockedDevices', JSON.stringify(blockedDevices));
-          document.body.innerHTML = "<h1 style='color:red;'>Доступ заблокирован</h1><p>Попытка использовать несколько аккаунтов.</p>";
+        if (!registered) localStorage.setItem('registeredDevice', vid);
+        if (registered && registered!==vid) {
+          blocked.push(vid);
+          localStorage.setItem('blockedDevices', JSON.stringify(blocked));
+          document.body.innerHTML = "<h1 style='color:red;'>Доступ заблокирован</h1><p>Попытка мультиаккаунтов.</p>";
           return;
         }
-
-        // Everything's good, start surfing
-        startSurfing();
+        // Всё чисто — стартуем
+        initSystemStats();
+        updateUI();
+        showNextAd();
       });
     });
 
-    // Daily limit reset
-    function initViews() {
-      const today = new Date().toDateString();
-      const storedDate = localStorage.getItem('viewsDate');
-      if (storedDate !== today) {
-        localStorage.setItem('viewsDate', today);
-        localStorage.setItem('viewsCount', '0');
-      }
-      viewsCount = parseInt(localStorage.getItem('viewsCount') || '0');
-      viewsEl.textContent = viewsCount;
-      document.getElementById('maxViews').textContent = maxViewsPerDay;
-    }
-
-    // Update balance display and withdraw button
-    function updateUI() {
-      balanceEl.textContent = balance.toFixed(8);
-      if (balance >= minWithdraw) {
-        withdrawBtn.disabled = false;
-      }
-    }
-
-    // Log earnings to Google Sheets
-    function logEarnings(wallet, earned) {
-      fetch('https://script.google.com/macros/s/AKfycby3lWT2s-B9wwQ6lEVIe5ZOavOGlk5NQkcanqY9eD7GwqXI6jXzYpnxANHDEC9S403AgA/exec', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ wallet, earned })
-      });
-    }
-
-    // Send withdraw request to Telegram
-    function sendWithdraw(wallet, amount) {
-      const text = encodeURIComponent(`Withdraw request:\nWallet: ${wallet}\nAmount: ${amount.toFixed(8)} LTC`);
-      fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}`);
-    }
-
-    function updateBalance() {
-      balance += earnPerView;
-      localStorage.setItem('balance', balance.toString());
-      const wallet = localStorage.getItem('wallet') || 'anonymous';
-      logEarnings(wallet, earnPerView);
-      updateUI();
-    }
-
-    function showNextAd() {
-      if (document.visibilityState !== 'visible') return; // Tab not active
-      if (viewsCount >= maxViewsPerDay) return; // Limit reached
-
-      // Show ad
-      const idx = Math.floor(Math.random() * adLinks.length);
-      document.getElementById('adFrame').src = adLinks[idx];
-
-      // Increment counters
-      viewsCount++;
-      localStorage.setItem('viewsCount', viewsCount.toString());
-      viewsEl.textContent = viewsCount;
-      updateBalance();
-
-      // Schedule next
-      setTimeout(showNextAd, 20000);
-    }
-
-    // Prompt wallet and start
-    function startSurfing() {
-      let wallet = localStorage.getItem('wallet');
-      if (!wallet) {
-        wallet = prompt('Enter your LTC wallet address:');
-        localStorage.setItem('wallet', wallet);
-      }
-      initViews();
-      updateUI();
-      showNextAd();
-    }
-
-    // Withdraw button handler
+    // Обработчик кнопки вывода
     withdrawBtn.addEventListener('click', () => {
-      const wallet = localStorage.getItem('wallet');
       if (balance < minWithdraw) return;
-      sendWithdraw(wallet, balance);
-      withdrawMsg.textContent = 'Withdraw request sent!';
-      withdrawMsg.style.color = '#28a745';
+      alert('Запрос на вывод отправлен (симуляция).');
       balance = 0;
-      localStorage.setItem('balance', '0');
+      localStorage.setItem('balance','0');
       updateUI();
     });
   </script>
